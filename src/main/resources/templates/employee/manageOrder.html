@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/nav.css}">
+    <title>Manage Order</title>
+	
+	
+	<style>	
+		
+		.container
+      	{
+			margin-top: 150px;
+       	}
+		
+		a
+		{
+			text-decoration: none;
+		}
+		
+		table
+		{
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		  padding: 5px 20px;
+		}		
+		
+		.button
+		{
+			padding: 10px 25px;
+	         margin: 10px auto;
+			background-color: rgb(26, 91, 165);
+			color: white;
+		}
+		
+		.center
+		{
+			margin: 10px auto;
+			text-align: center;
+		}
+
+		#by
+		{
+			padding: 5px 15px;
+			margin: 10px auto;
+			background-color:  aliceblue;
+		}
+		
+	</style>
+		
+</head>
+<body>
+	
+	<nav>
+		<a th:href="@{/employee}" class="nav-item"> DASHBOARD </a>
+		<a th:href="@{/logout}" class="nav-item"> LOGOUT </a>
+	</nav>
+	
+	<div class="container">
+		
+		<h4 class="center"><u>Search</u></h4>
+			
+		<form class="center" th:action="@{/employee/manageOrder}" method="post">
+
+			 <input type="text" name="term">
+			 
+			 <select name="by" id="by">
+				<option value="name">Name</option>
+				<option value="username">Username</option>
+				<option value="email">Email</option>
+				<option value="phone">Phone</option>
+			 </select>
+			 
+			 <button class="button" type="submit">Search</button>
+
+		</form>
+
+		<h4 class="center"> <u>Customers</u> </h4>
+		<div class="center" th:each="customer: ${customers}">
+			<a th:href="@{/employee/manageOrder/}+${customer.username}" th:text="${customer.full_name}" style="color: blue;"></a>
+		</div>
+		
+	</div>
+	
+    
+</body>
+</html>

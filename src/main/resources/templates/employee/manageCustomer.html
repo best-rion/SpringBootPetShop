@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" th:href="@{/css/nav.css}">
+    <title>Manage Employees</title>
+	
+	
+	<style>
+
+		a
+		{
+			text-decoration: none;
+		}
+		
+		table
+		{
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		  padding: 5px 20px;
+		}
+		
+		.top
+		{
+			position: relative;
+			display: flex;
+			width: 60%;
+			margin: auto;
+		}
+		
+		.bottom
+		{
+			margin-top: 30px;
+		}
+
+		.half
+		{
+			position: relative;
+			width: 50%;
+			text-align: center
+		}
+		
+		.buttons
+	    {
+	        display: flex;
+			width: 30%;
+			margin: auto;
+	    }
+				
+		
+		.button
+		{
+			padding: 10px 25px;
+	         margin: 10px auto;
+			background-color: rgb(26, 91, 165);
+			color: white;
+		}
+		
+		.center
+		{
+			margin: 10px auto;
+			text-align: center;
+		}
+		
+	</style>
+	
+	
+</head>
+<body>
+	<nav>
+		<a th:href="@{/employee}" class="nav-item"> DASHBOARD </a>
+		<a th:href="@{/logout}" class="nav-item"> LOGOUT </a>
+	</nav>
+
+	<form th:action="@{/employee/manageCustomer}" th:object="${form}" method="post" onsubmit="return validateForm()">
+
+		<h3 class="center"><u>Add/Edit Customer Info</u></h3>
+		
+		<div class="top">
+
+			<div class="half">
+
+				<small id="full_nameMessage"></small>
+				<p>
+					Full Name: <input type="text" name="full_name" id="full_name">
+				</p>
+
+				<small id="usernameMessage"></small>
+				<small th:if="${usernameAlreadyExists}">This username already exists. Choose a different one.</small>
+				<p>
+					Username: <input type="text" name="username" id="username">
+				</p>
+
+				<small id="emailMessage"></small>
+				<p>
+					Email: <input type="text" name="email" id="email">
+				</p>
+				  
+
+			</div>
+
+			<div class="half">
+
+				<small id="genderMessage"></small>
+				<p>
+					Gender: <input type="radio" id="genderM" name="gender" value="M">
+					  <label for="genderM">M</label>
+					  <input type="radio" id="genderF" name="gender" value="F">
+					  <label for="genderF">F</label>
+				</p>
+				
+				
+				<small id="phoneMessage"></small>
+				<p>
+					Phone: <input type="text" name="phone" id="phone">
+				</p>
+
+				<small id="passwordMessage"></small>
+				<p id="passwordField">
+					Password: <input type="text" name="password" id="password"><br>
+				</p>
+				
+				
+			</div>
+
+		</div>
+
+
+		<div class="buttons">
+			<input type="text" id="action" name="action" value="add" hidden>
+
+			<button class="button" type="submit">Submit</button>
+			<a th:href="@{/employee/manageCustomer}">
+				<button class="button" type="button">Clear</button>
+			</a>
+			<button class="button" type="submit" onclick="remove()">Remove</button>
+		</div>
+		
+		
+	</form>
+	
+	<div class="bottom">
+		
+		<h3 class="center"><u>Customer Info Table</u></h3>
+	
+		<table>
+		   <tr>
+			 <th>ID</th>
+			 <th>Name</th>
+			 <th>Username</th>
+			 <th>Email</th>
+			 <th>Gender</th>
+			 <th>Phone</th>
+		   </tr>
+		   
+		   <tr th:each="customer: ${customers}"
+		     th:data-full_name	=  "${customer.full_name}"
+		     th:data-username	=  "${customer.username}"
+		   	 th:data-email		=  "${customer.email}"
+			 th:data-gender		=  "${customer.gender}"
+		     th:data-phone		=  "${customer.phone}"
+			 
+		     th:onclick="clickRow(
+		   				  this.getAttribute('data-full_name'),
+		   				  this.getAttribute('data-username'),
+		   				  this.getAttribute('data-email'),
+						  this.getAttribute('data-gender'),
+		   				  this.getAttribute('data-phone')
+		   				  )">
+		     <td th:text="${customer.id}"></td>
+			 <td th:text="${customer.full_name}"></td>
+			 <td th:text="${customer.username}"></td>
+			 <td th:text="${customer.email}"></td>
+			 <td th:text="${customer.gender}"></td>
+			 <td th:text="${customer.phone}"></td>
+		   </tr>
+		 </table> 
+
+	</div>
+	
+
+
+	
+	<script>
+		
+		var updateMode = false;
+		
+		function validateForm() {
+			var name = document.getElementById("full_name").value;
+			if (name == "") {
+			document.getElementById("full_nameMessage").innerHTML = "Name must be filled out";
+			return false;
+			}
+			
+			var username = document.getElementById("username").value;
+			if (username == "") {
+			document.getElementById("usernameMessage").innerHTML = "Username must be filled out";
+			return false;
+			}
+
+			var email = document.getElementById("email").value;
+			if (email == "") {
+			document.getElementById("emailMessage").innerHTML = "Email must be filled out";
+			return false;
+			}
+	
+			var genderM = document.getElementById("genderM").checked;
+			var genderF = document.getElementById("genderF").checked;
+			if ( !genderM && !genderF ) {
+			document.getElementById("genderMessage").innerHTML = "Gender must be filled out";
+			return false;
+			}
+			
+			var phone = document.getElementById("phone").value;
+			if (phone == "") {
+			document.getElementById("phoneMessage").innerHTML = "Phone must be filled out";
+			return false;
+			}
+			
+			var password = document.getElementById("password").value;
+			if (password == "" && !updateMode) {
+			document.getElementById("passwordMessage").innerHTML = "Password must be filled out";
+			return false;
+			}
+		} 
+		
+		function clickRow(full_name, username, email, gender, phone)
+		{
+			updateMode = true;
+			
+			document.getElementById("action").value 			= "update";
+			document.getElementById("username").readOnly 		= true;
+			document.getElementById("passwordField")
+											.style.display 		= "none";
+			
+			
+			document.getElementById("full_name").value 			= full_name;
+			document.getElementById("username").value 			= username;
+			document.getElementById("email").value 				= email;
+			document.getElementById("gender"+gender).checked 			= true
+			document.getElementById("phone").value 				= phone;
+		}
+		
+		function remove()
+		{
+			document.getElementById("action").value 			= "remove";
+		}
+		
+	</script>
+
+</body>
+</html>

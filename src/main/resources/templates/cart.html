@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/nav.css}">
+    <title>Cart</title>
+	
+	<style>
+		
+		.half
+		{
+			position: relative;
+			width: 50%;
+			text-align: center;
+		}
+		
+		#container
+		{
+			position: relative;
+			display: flex;
+			top: 100px;
+		}
+		
+		table
+		{
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		  padding: 5px 20px;
+		}
+		
+		.buttons
+	    {
+	        display: flex;
+	    }
+		
+		.button
+		{
+			padding: 10px 25px;
+	         margin: 10px auto;
+			background-color: rgb(26, 91, 165);
+			color: white;
+		}
+		
+		#product
+		{
+			padding: 5px 15px;
+			margin: 10px auto;
+			background-color:  aliceblue;
+		}
+		
+	</style>
+	
+</head>
+<body>
+	
+	
+	<nav>
+		<a th:href="@{/}" class="nav-item"> HOME </a>
+		<a th:href="@{/logout}" class="nav-item"> LOGOUT </a>
+	</nav>
+	
+	
+	
+	<div id="container">
+		
+		<div class="half">
+			<h4>Details</h4>
+			<img id="image" th:src="@{/images/asset/Pets.png}"  alt="Image" heigh="200" width="200">
+
+			<p>Name 	: <span id="detail-name"></span></p>
+			
+			<p id="species-visible" style="display: none;">Species	: <span id="detail-species"></span></p>
+			
+			<p id="quantity-visible" style="display: none;">Quantity : <input type="number" id="detail-quantity" size="8" step="1"></p>
+			
+			<p>Price 	: <span id="detail-price"></span></p>
+			
+			<div class="buttons">
+                <button class="button" id="update-btn" th:onclick="update()" style="display: none;">Update</button>
+                <button class="button" id="remove-btn" th:onclick="remove()">Remove</button>
+            </div>
+			
+		</div>
+	
+		<div class="half">
+			
+			<div class="half-top">
+
+				<h4>Cart</h4>
+				<select name="product"id="product" onchange="select()">
+					<option value="pet">Pet</option>
+					<option value="food">Food</option>
+					<option value="supplies">Supplies</option>
+				 </select>
+				 
+				 <div id="petTable" style="display:block;">
+					 
+					 <table>
+					   <tr>
+						 <th>Name</th>
+						 <th>Species</th>
+						 <th>Price</th>
+					   </tr>
+					   
+					   <tr th:each="petOrder: ${cart.petOrders}"
+							   th:data-type="${petOrder.pet.type}"
+							   th:data-id="${petOrder.pet.id}"
+							 th:data-name="${petOrder.pet.name}"
+							 th:data-species="${petOrder.pet.species}"
+							 th:data-quantity="null"
+							 th:data-price="${petOrder.pet.price}"
+							 th:data-image_suffix="${petOrder.pet.image_suffix}"
+								th:onclick="clickRow(
+												  this.getAttribute('data-type'),
+												  this.getAttribute('data-id'),
+												  this.getAttribute('data-image_suffix'),
+												  this.getAttribute('data-name'),
+												  this.getAttribute('data-species'),
+												  this.getAttribute('data-quantity'),
+												  this.getAttribute('data-price')
+												  )"
+							th:id="'pet-'+${petOrder.pet.id}">
+						 <td th:text="${petOrder.pet.name}"></td>
+						 <td th:text="${petOrder.pet.species}"></td>
+						 <td th:text="${petOrder.pet.price}"></td>
+					   </tr>
+					 </table> 
+					 
+				 </div>
+				 
+				 <div id="foodTable" style="display:none;">
+					 
+					 <table>
+					   <tr>
+						 <th>Name</th>
+						 <th>Quantity</th>
+						 <th>Price</th>
+					   </tr>
+					   
+					   <tr th:each="foodOrder: ${cart.foodOrders}"
+							   th:data-type="${foodOrder.food.type}"
+							   th:data-id="${foodOrder.food.id}"
+							 th:data-name="${foodOrder.food.name}"
+							 th:data-species="null"
+							 th:data-quantity="${foodOrder.quantity}"
+							 th:data-price="${foodOrder.food.price}"
+							 th:data-image_suffix="${foodOrder.food.image_suffix}"
+								th:onclick="clickRow(
+												  this.getAttribute('data-type'),
+												  this.getAttribute('data-id'),
+												  this.getAttribute('data-image_suffix'),
+												  this.getAttribute('data-name'),
+												  this.getAttribute('data-species'),
+												  this.getAttribute('data-quantity'),
+												  this.getAttribute('data-price')
+												  )"
+							 th:id="'food-'+${foodOrder.food.id}" >
+						 <td th:text="${foodOrder.food.name}"></td>
+						 <td th:id="'food-'+${foodOrder.food.id}+'-quantity'" th:text="${foodOrder.quantity}"></td>
+						 <td th:text="${foodOrder.food.price}"></td>
+					   </tr>
+					 </table> 
+				 </div>
+				 
+				 <div id="suppliesTable" style="display:none;">
+					 
+					 <table>
+					   <tr>
+						 <th>Name</th>
+						 <th>Quantity</th>
+						 <th>Price</th>
+					   </tr>
+					   
+					   <tr th:each="suppliesOrder: ${cart.suppliesOrders}"
+							   th:data-type="null"
+							   th:data-id="${suppliesOrder.supply.id}"
+							 th:data-name="${suppliesOrder.supply.name}"
+							 th:data-species="null"
+							 th:data-quantity="${suppliesOrder.quantity}"
+							 th:data-price="${suppliesOrder.supply.price}"
+							 th:data-image_suffix="${suppliesOrder.supply.image_suffix}"
+								th:onclick="clickRow(
+												  this.getAttribute('data-type'),
+												  this.getAttribute('data-id'),
+												  this.getAttribute('data-image_suffix'),
+												  this.getAttribute('data-name'),
+												  this.getAttribute('data-species'),
+												  this.getAttribute('data-quantity'),
+												  this.getAttribute('data-price')
+												  )"
+							th:id="'supplies-'+${suppliesOrder.supply.id}">
+						 <td th:text="${suppliesOrder.supply.name}"></td>
+						 <td th:id="'supplies-'+${suppliesOrder.supply.id}+'-quantity'" th:text="${suppliesOrder.quantity}"></td>
+						 <td th:text="${suppliesOrder.supply.price}"></td>
+					   </tr>
+					 </table> 
+					 
+				 </div>
+
+				 <div class="half-bottom">
+
+					<h4>Checkout</h4>
+					<table>
+						<tr>
+						  <td>Pet</td>
+						  <td th:text="${petCost}"></td>
+						</tr>
+						<tr>
+							<td>Food</td>
+							<td th:text="${foodCost}"></td>
+						  </tr>
+						  <tr>
+							<td>Supplies</td>
+							<td th:text="${suppliesCost}"></td>
+						  </tr>
+						  <tr>
+							<th>Total</td>
+							<th th:text="${totalCost}"></td>
+						  </tr>
+					</table> 
+
+				 </div>
+				
+			</div>
+				
+		</div>
+		0
+	</div>
+	
+	
+	<script>
+		
+		var current_item = 
+		{
+			product: "pet",
+			id : null
+		}
+		
+		
+		function select()
+		{
+			var selected = document.getElementById("product")
+	
+			if (selected.value== "pet")
+			{
+				document.getElementById("petTable").style.display = "block";
+				document.getElementById("foodTable").style.display = "none";
+				document.getElementById("suppliesTable").style.display = "none";
+				
+				document.getElementById("update-btn").style.display = "none";
+				
+				
+				current_item.product = "pet";
+				current_item.id = null;
+			}
+			
+			if (selected.value== "food")
+			{
+				document.getElementById("petTable").style.display = "none";
+				document.getElementById("foodTable").style.display = "block";
+				document.getElementById("suppliesTable").style.display = "none";
+				
+				document.getElementById("update-btn").style.display = "block";
+				
+				
+				current_item.product = "food";
+				current_item.id = null;
+			}
+			
+			if (selected.value== "supplies")
+			{
+				document.getElementById("petTable").style.display = "none";
+				document.getElementById("foodTable").style.display = "none";
+				document.getElementById("suppliesTable").style.display = "block";
+
+				document.getElementById("update-btn").style.display = "block";
+				
+				
+				current_item.product = "supplies";
+				current_item.id = null;
+			}
+		}
+		
+		async function clickRow(type, id, image_suffix, name, species , quantity, price)
+		{
+			current_item.id = id
+		
+			let image = document.getElementById("image")
+			
+			fetch
+			(
+				"http://localhost:8080/image?product="+current_item.product+"&type="+type+"&id="+id+"&image_suffix="+image_suffix,
+				{
+			        method: 'GET',
+			        headers: {'Content-Type': 'text/plain'},
+			       // body: id
+		    	}
+			)
+			.then(response=>response.blob())
+			.then(body=>{
+
+					image.src = URL.createObjectURL( body )
+					
+					if (species == null)
+					{
+						document.getElementById("species-visible").style.display = "none"
+						document.getElementById("quantity-visible").style.display = "block"
+					
+						document.getElementById("detail-quantity").value = quantity
+					}
+					
+					if (quantity == null)
+					{
+						document.getElementById("species-visible").style.display = "block"
+						document.getElementById("quantity-visible").style.display = "none"
+						
+						document.getElementById("detail-species").innerHTML = species
+					}
+
+					document.getElementById("detail-name").innerHTML = name
+					document.getElementById("detail-price").innerHTML = price
+					console.log(species,quantity)
+					
+			})
+		}
+		
+		
+		function update()
+		{
+			if (current_item.product != "pet")
+			{
+				var quantity = document.getElementById("detail-quantity").value
+				
+				fetch
+				(
+					"http://localhost:8080/update/"+current_item.product+"/"+current_item.id,
+					{
+				        method: 'PUT',
+				        headers: {'Content-Type': 'text/plain'},
+				       	body: quantity
+					}
+				)
+				.then(response=>response.text())
+				.then(body=>{
+
+						document.getElementById(current_item.product+"-"+current_item.id+"-quantity").innerHTML = quantity
+						
+				})
+				
+			}
+		}
+		
+		
+		function remove()
+		{
+			fetch
+			(
+				"http://localhost:8080/remove/"+current_item.product+"/"+current_item.id,
+				{
+			        method: 'DELETE'
+				}
+			)
+			.then(response=>response.text())
+			.then(body=>{
+
+					location.reload()
+			})
+		}
+		
+		
+	</script>
+	
+</body>
+</html>

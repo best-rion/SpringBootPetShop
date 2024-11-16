@@ -1,0 +1,33 @@
+nav
+{
+    height: 50px;
+    width: 100%;
+    background-color: aliceblue;
+    position: fixed;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+}
+
+#cart-btn
+{
+    background-color: rgb(98, 181, 236);
+    border: none;
+    height: 30px;
+    width: 50px;
+    margin: auto;
+    text-align: center;
+    color: black;
+}
+
+a
+{
+    text-decoration: none;
+	color: black;
+}
+
+.nav-item
+{
+	margin: auto 10px;
+}
+

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" th:href="@{/css/nav.css}">
+    <title>Manage Supplies</title>
+	
+	
+	<style>
+
+		a
+		{
+			text-decoration: none;
+		}
+		
+		table
+		{
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		  padding: 5px 20px;
+		}
+		
+		.top
+		{
+			position: relative;
+			display: flex;
+			width: 60%;
+			margin: auto;
+		}
+		
+		.bottom
+		{
+			margin-top: 30px;
+		}
+
+		.half
+		{
+			position: relative;
+			width: 50%;
+			text-align: center;
+		}
+		
+		.buttons
+	    {
+	        display: flex;
+			width: 30%;
+			margin: auto;
+	    }
+				
+		
+		.button
+		{
+			padding: 10px 25px;
+	         margin: 10px auto;
+			background-color: rgb(26, 91, 165);
+			color: white;
+		}
+		
+		.center
+		{
+			margin: 10px auto;
+			text-align: center;
+		}
+		
+	</style>
+	
+</head>
+<body>
+
+		<nav>
+			<a th:href="@{/admin}" class="nav-item"> DASHBOARD </a>
+			<a th:href="@{/logout}" class="nav-item"> LOGOUT </a>
+		</nav>
+		
+		
+    <form th:action="@{/admin/manageSupplies}" th:object="${form}" method="post" onsubmit="return validateForm()" enctype="multipart/form-data">
+		
+		<h3 class="center"><u>Add/Edit Supplies Info</u></h3>		
+	
+	
+		<div class="top">
+
+			<div class="half">
+
+				<small id="nameMessage"></small>
+				<p>
+					Name: <input type="text" name="name" id="name">
+				</p>
+				
+				<img id="imageDetail" th:src="@{/images/asset/PetFood.png}"  alt="Image" heigh="100" width="100" style="display: none;">
+
+				<small id="imageMessage"></small>
+				<p id="imageField">
+					Image: <input type="file" name="image" id="image">
+				</p>
+
+			</div>
+
+			<div class="half">
+
+				<small id="priceMessage"></small>
+				<p>
+					Price: <input type="text" name="price" id="price">
+				</p>
+				
+				<small id="quantityMessage"></small>
+				<p>
+					Quantity: <input type="text" name="quantity" id="quantity">
+				</p>
+				
+			</div>
+
+		</div>
+
+
+		<div class="buttons">
+			<input type="text" id="action" name="action" value="add" hidden>
+			<input type="number" id="id" name="id" value="0" hidden>
+
+			<button class="button" type="submit">Submit</button>
+			<a th:href="@{/admin/manageSupplies}">
+				<button class="button" type="button">Clear</button>
+			</a>
+			<button class="button" type="submit" onclick="remove()">Remove</button>
+		</div>
+		
+		
+	</form>
+	
+	
+	
+	<div class="bottom">
+		
+		<h3 class="center"><u>Supplies Info Table</u></h3>
+	
+		<table>
+		   <tr>
+			 <th>ID</th>
+			 <th>Name</th>
+			 <th>Price</th>
+			 <th>Quantity</th>
+		   </tr>
+		   
+		   <tr th:each="supply: ${supplies}"
+		     th:data-id			=  "${supply.id}"
+		     th:data-name		=  "${supply.name}"
+		     th:data-price		=  "${supply.price}"
+			 th:data-quantity	=  "${supply.quantity}"
+			 th:data-image_suffix  =  "${supply.image_suffix}"
+			 
+		     th:onclick="clickRow(
+			 			  this.getAttribute('data-id'),
+		   				  this.getAttribute('data-name'),
+		   				  this.getAttribute('data-price'),
+						  this.getAttribute('data-quantity'),
+						  this.getAttribute('data-image_suffix')
+		   				  )">
+		     <td th:text="${supply.id}"></td>
+			 <td th:text="${supply.name}"></td>
+			 <td th:text="${supply.price}"></td>
+			 <td th:text="${supply.quantity}"></td>
+		   </tr>
+		 </table> 
+
+	</div>
+	
+	<script>
+		function validateForm()
+		{
+			var name = document.getElementById("name").value;
+			if (name == "") {
+			document.getElementById("nameMessage").innerHTML = "Name must be filled out";
+			return false;
+			}
+
+			var price = document.getElementById("price").value;
+			if (price == "") 
+			{
+				document.getElementById("priceMessage").innerHTML = "Price must be filled out";
+				return false;
+			}
+
+			var quantity = document.getElementById("quantity").value;
+			if (quantity == "") 
+			{
+				document.getElementById("quantityMessage").innerHTML = "Quantity must be filled out";
+				return false;
+			}
+		} 
+		
+		
+		
+		function clickRow(id, name, price, quantity, image_suffix)
+		{
+			updateMode = true
+			
+			document.getElementById("id").value 				= id;
+			document.getElementById("action").value 			= "update";
+			document.getElementById("imageField")
+										.style.display 			= "none";
+			
+			
+			document.getElementById("name").value 				= name;
+			document.getElementById("price").value 				= price;
+			document.getElementById("quantity").value 			= quantity;
+			
+			
+			
+			///set image
+			
+			let image = document.getElementById("imageDetail")
+			image.style.display = "inline"
+			
+			fetch
+			(
+				"http://localhost:8080/image?product=supplies&type=null&id="+id+"&image_suffix="+image_suffix,
+				{
+			        method: 'GET',
+			        headers: {'Content-Type': 'text/plain'},
+		    	}
+			)
+			.then(response=>response.blob())
+			.then(body=>{
+
+					image.src = URL.createObjectURL( body )
+					
+			})
+
+
+		}
+		
+		
+		function remove()
+		{
+			document.getElementById("action").value = "remove";
+		}
+		
+		
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" th:href="@{/css/nav.css}">
+    <title>Manage Pets</title>
+	
+	
+	<style>
+
+		a
+		{
+			text-decoration: none;
+		}
+		
+		table
+		{
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		  padding: 5px 20px;
+		}
+		
+		.top
+		{
+			position: relative;
+			display: flex;
+			width: 60%;
+			margin: auto;
+		}
+		
+		.bottom
+		{
+			margin-top: 30px;
+		}
+
+		.half
+		{
+			position: relative;
+			width: 50%;
+			text-align: center;
+		}
+		
+		.buttons
+	    {
+	        display: flex;
+			width: 30%;
+			margin: auto;
+	    }
+				
+		
+		.button
+		{
+			padding: 10px 25px;
+	         margin: 10px auto;
+			background-color: rgb(26, 91, 165);
+			color: white;
+		}
+		
+		.center
+		{
+			margin: 10px auto;
+			text-align: center;
+		}
+		
+	</style>
+	
+	
+</head>
+<body>
+
+		<nav>
+			<a th:href="@{/admin}" class="nav-item"> DASHBOARD </a>
+			<a th:href="@{/logout}" class="nav-item"> LOGOUT </a>
+		</nav>
+		
+		
+		<form th:action="@{/admin/managePet}" th:object="${form}" method="post" onsubmit="return validateForm()" enctype="multipart/form-data">
+
+
+			<h3 class="center"><u>Add/Edit Pet Info</u></h3>
+			
+			<div class="top">
+
+				<div class="half">
+
+					<small id="nameMessage"></small>
+					<p>
+						Name: <input type="text" name="name" id="name">
+					</p>
+					
+					<img id="imageDetail" th:src="@{/images/asset/Pets.png}"  alt="Image" heigh="100" width="100" style="display: none;">
+
+					<small id="imageMessage"></small>
+					<p id="imageField">
+						Image: <input type="file" name="image" id="image">
+					</p>
+
+					<small id="ageMessage"></small>
+					<p>
+						Age: <input type="text" name="age" id="age">
+					</p>
+
+				</div>
+	
+				<div class="half">
+
+					<small id="speciesMessage"></small>
+					<p>
+						Species: <input type="text" name="species" id="species">
+					</p>
+					<small id="priceMessage"></small>
+					<p>
+						Price: <input type="text" name="price" id="price">
+					</p>
+					
+					<small id="gtypeMessage"></small>
+					<p>
+						Type: <input type="radio" id="dog" name="type" value="dog">
+							  <label for="dog">Dog</label>
+							  <input type="radio" id="cat" name="type" value="cat">
+							  <label for="cat">Cat</label>
+					</p>
+	
+				</div>
+
+			</div>
+
+
+			<div class="buttons">
+				<input type="text" id="action" name="action" value="add" hidden>
+				<input type="number" id="id" name="id" value="0" hidden>
+
+				<button class="button" type="submit">Submit</button>
+				<a th:href="@{/admin/managePet}">
+					<button class="button" type="button">Clear</button>
+				</a>
+			</div>
+			
+			
+		</form>
+	
+	<div class="bottom">
+		
+		<h3 class="center"><u>Pet Info Table</u></h3>
+	
+		<table>
+		   <tr>
+			 <th>ID</th>
+			 <th>Name</th>
+			 <th>Age</th>
+			 <th>Species</th>
+			 <th>Price</th>
+			 <th>Type</th>
+		   </tr>
+		   
+		   <tr th:each="pet: ${pets}"
+		     th:data-id			=  "${pet.id}"
+		     th:data-name		=  "${pet.name}"
+		   	 th:data-age		=  "${pet.age}"
+			 th:data-species	=  "${pet.species}"
+		     th:data-price		=  "${pet.price}"
+		     th:data-type		=  "${pet.type}"
+			 th:data-image_suffix  =  "${pet.image_suffix}"
+			 
+		     th:onclick="clickRow(
+			 			  this.getAttribute('data-id'),
+		   				  this.getAttribute('data-name'),
+		   				  this.getAttribute('data-age'),
+		   				  this.getAttribute('data-species'),
+		   				  this.getAttribute('data-price'),
+		   				  this.getAttribute('data-type'),
+						  this.getAttribute('data-image_suffix')
+		   				  )">
+		     <td th:text="${pet.id}"></td>
+			 <td th:text="${pet.name}"></td>
+			 <td th:text="${pet.age}"></td>
+			 <td th:text="${pet.species}"></td>
+			 <td th:text="${pet.price}"></td>
+			 <td th:text="${pet.type}"></td>
+		   </tr>
+		 </table> 
+
+	</div>
+	
+
+
+	
+	<script>
+		
+		var updateMode = false
+		
+		function validateForm()
+		{
+			var name = document.getElementById("name").value;
+			if (name == "")
+			{
+				document.getElementById("nameMessage").innerHTML = "Name must be filled out";
+				return false;
+			}
+			
+			var age = document.getElementById("age").value;
+			if (age == "") 
+			{
+				document.getElementById("ageMessage").innerHTML = "Age must be filled out";
+				return false;
+			}
+			
+			var species = document.getElementById("species").value;
+			if (species == "") 
+			{
+				document.getElementById("speciesMessage").innerHTML = "Species must be filled out";
+				return false;
+			}
+			
+			var price = document.getElementById("price").value;
+			if (price == "") 
+			{
+				document.getElementById("priceMessage").innerHTML = "Price must be filled out";
+				return false;
+			}
+			
+			var dog = document.getElementById("dog").checked;
+			var cat = document.getElementById("cat").checked;
+			if ( !dog && !cat ) 
+			{
+				document.getElementById("typeMessage").innerHTML = "Type must be filled out";
+				return false;
+			}
+		} 
+		
+		
+		function clickRow(id, name, age, species, price, type, image_suffix)
+		{
+			updateMode = true
+			document.getElementById("id").value 				= id;
+			document.getElementById("action").value 			= "update";
+			document.getElementById("imageField")
+										.style.display 			= "none";
+			
+			document.getElementById("name").value 				= name;
+			document.getElementById("age").value 				= age;
+			document.getElementById("species").value 			= species;
+			document.getElementById("price").value 				= price;
+			document.getElementById(type).checked 				= true;
+			
+			
+			
+			///set image
+			
+			let image = document.getElementById("imageDetail")
+			image.style.display = "inline"
+			
+			fetch
+			(
+				"http://localhost:8080/image?product=pet&type="+type+"&id="+id+"&image_suffix="+image_suffix,
+				{
+			        method: 'GET',
+			        headers: {'Content-Type': 'text/plain'},
+		    	}
+			)
+			.then(response=>response.blob())
+			.then(body=>{
+
+					image.src = URL.createObjectURL( body )
+					
+			})
+
+
+		}
+		
+		
+		function remove()
+		{
+			document.getElementById("action").value 			= "remove";
+		}
+		
+	</script>
+
+</body>
+</html>
