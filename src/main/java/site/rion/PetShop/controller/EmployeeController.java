@@ -2,7 +2,6 @@ package site.rion.PetShop.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.itextpdf.text.DocumentException;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import site.rion.PetShop.form.CustomerForm;
 import site.rion.PetShop.form.SearchForm;
@@ -33,9 +31,6 @@ import site.rion.PetShop.model.customerManage.SuppliesOrder;
 import site.rion.PetShop.model.employeeManage.Customer;
 import site.rion.PetShop.repository.CartRepository;
 import site.rion.PetShop.repository.CustomerRepository;
-import site.rion.PetShop.repository.FoodOrderRepository;
-import site.rion.PetShop.repository.PetOrderRepository;
-import site.rion.PetShop.repository.SuppliesOrderRepository;
 import site.rion.PetShop.util.PdfCreator;
 
 @Controller
@@ -47,15 +42,6 @@ public class EmployeeController
 	@Autowired
 	CartRepository cartRepo;
 	
-	
-	@Autowired
-	PetOrderRepository petOrderRepo;
-	
-	@Autowired
-	FoodOrderRepository foodOrderRepo;
-	
-	@Autowired
-	SuppliesOrderRepository suppliesOrderRepo;
 
 	@GetMapping("/employee")
 	public String employee()
@@ -130,7 +116,7 @@ public class EmployeeController
 		return "employee/manageOrder";
 	}
 	
-	@PostMapping("/employee/manageOrder") //Searching, not editing
+	@PostMapping("/employee/manageOrder")
 	public String manageOrderPost(@ModelAttribute SearchForm form, Model model)
 	{
 		List<Customer> customers = null;
@@ -221,21 +207,6 @@ public class EmployeeController
 		catch(IOException | DocumentException | URISyntaxException  ex)
 		{
 			ex.printStackTrace();
-		}
-		
-		for (PetOrder petOrder: cart.getPetOrders())
-		{
-			petOrderRepo.delete(petOrder);
-		}
-		
-		for (FoodOrder foodOrder: cart.getFoodOrders())
-		{
-			foodOrderRepo.delete(foodOrder);
-		}
-		
-		for (SuppliesOrder suppliesOrder: cart.getSuppliesOrders())
-		{
-			suppliesOrderRepo.delete(suppliesOrder);
 		}
 		
 		cartRepo.delete(cart);

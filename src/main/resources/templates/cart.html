@@ -58,14 +58,11 @@
 	
 </head>
 <body>
-	
-	
+
 	<nav>
 		<a th:href="@{/}" class="nav-item"> HOME </a>
 		<a th:href="@{/logout}" class="nav-item"> LOGOUT </a>
 	</nav>
-	
-	
 	
 	<div id="container">
 		
@@ -205,7 +202,7 @@
 
 				 <div class="half-bottom">
 
-					<h4>Checkout</h4>
+					<h4>Bill</h4>
 					<table>
 						<tr>
 						  <td>Pet</td>
@@ -230,7 +227,7 @@
 			</div>
 				
 		</div>
-		0
+		
 	</div>
 	
 	
@@ -326,7 +323,6 @@
 					document.getElementById("detail-name").innerHTML = name
 					document.getElementById("detail-price").innerHTML = price
 					console.log(species,quantity)
-					
 			})
 		}
 		
@@ -349,10 +345,8 @@
 				.then(response=>response.text())
 				.then(body=>{
 
-						document.getElementById(current_item.product+"-"+current_item.id+"-quantity").innerHTML = quantity
-						
+						document.getElementById(current_item.product+"-"+current_item.id+"-quantity").innerHTML = quantity	
 				})
-				
 			}
 		}
 		
@@ -372,7 +366,6 @@
 					location.reload()
 			})
 		}
-		
 		
 	</script>
 	

@@ -27,12 +27,11 @@ import site.rion.PetShop.model.customerManage.SuppliesOrder;
 import site.rion.PetShop.model.employeeManage.Customer;
 import site.rion.PetShop.repository.CartRepository;
 import site.rion.PetShop.repository.CustomerRepository;
-import site.rion.PetShop.repository.FoodOrderRepository;
 import site.rion.PetShop.repository.FoodRepository;
-import site.rion.PetShop.repository.PetOrderRepository;
 import site.rion.PetShop.repository.PetRepository;
-import site.rion.PetShop.repository.SuppliesOrderRepository;
 import site.rion.PetShop.repository.SuppliesRepository;
+import site.rion.PetShop.service.FoodBuyService;
+import site.rion.PetShop.service.PetAdoptionService;
 
 @RestController
 public class HomeRestController
@@ -47,64 +46,41 @@ public class HomeRestController
 	PetRepository petRepo;
 	
 	@Autowired
-	PetOrderRepository petOrderRepo;
-	
-	@Autowired
 	FoodRepository foodRepo;
-	
-	@Autowired
-	FoodOrderRepository foodOrderRepo;
 	
 	@Autowired
 	SuppliesRepository suppliesRepo;
 	
 	@Autowired
-	SuppliesOrderRepository suppliesOrderRepo;
+	PetAdoptionService petAdoptionService;
+	
+	@Autowired
+	FoodBuyService foodBuyService;
 	
 	
 	@PutMapping("/pet/adopt")
 	public String adopt(@RequestBody String id, Principal principal)
 	{
-		System.out.println(id);
-		// add pet to cart;
-
 		Customer customer = customerRepo.findByUsername( principal.getName() );
-		
-		int activeOrderExists = cartRepo.activeOrderExists( customer.getId() );
+		Cart cart = cartRepo.findByCustomerId( customer.getId() );
 		
 		Pet pet = petRepo.findById( Integer.parseInt(id) );
 		
-		if ( activeOrderExists == 0 )
+		if ( cart == null )
 		{
-			Cart newCart = new Cart( customer );
-
-			PetOrder petOrder = new PetOrder( pet );
-			
-			List<PetOrder> petOrders = newCart.getPetOrders();
-			
-			petOrders.add( petOrder );
-			
-			cartRepo.save( newCart );
-			
-			petOrderRepo.save(petOrder);
-			
+			petAdoptionService.adoptFirstPet(customer, pet);
 		}
 		else
 		{
-			// check if that customer already has the pet
-			Cart cart = cartRepo.findByCustomerId( customer.getId() );
-			
 			List<PetOrder> petOrders = cart.getPetOrders();
 			
 			if( petOrders.size() == 0 )
 			{
 				PetOrder petOrder = new PetOrder( pet );
 				
-				petOrders.add(petOrder);
+				petOrders.add( petOrder );
 				
 				cartRepo.save( cart );
-				
-				petOrderRepo.save( petOrder );
 			}
 			else
 			{
@@ -125,8 +101,6 @@ public class HomeRestController
 					petOrders.add(petOrder);
 					
 					cartRepo.save( cart );
-					
-					petOrderRepo.save( petOrder );
 				}
 				else
 				{
@@ -135,7 +109,6 @@ public class HomeRestController
 				
 			}
 		}
-		
 		
 		return "1";
 	}
@@ -151,15 +124,7 @@ public class HomeRestController
 		
 		if ( cart == null )
 		{
-			cart = new Cart( customer );
-
-			FoodOrder foodOrder = new FoodOrder( food );
-			foodOrder.setQuantity( 1 );
-			
-			List<FoodOrder> foodOrders = cart.getFoodOrders();
-			foodOrders.add( foodOrder );
-			
-			cartRepo.save( cart );
+			foodBuyService.buyFirstFood(customer, food);
 		}
 		else
 		{
@@ -209,9 +174,6 @@ public class HomeRestController
 	@PutMapping("/supplies/buy")
 	public String buySupplies(@RequestBody String id, Principal principal)
 	{
-		System.out.println(id);
-		// add food to cart;
-
 		Customer customer = customerRepo.findByUsername( principal.getName() );
 		
 		int activeOrderExists = cartRepo.activeOrderExists( customer.getId() );
@@ -231,8 +193,6 @@ public class HomeRestController
 			
 			cartRepo.save( newCart );
 			
-			suppliesOrderRepo.save(suppliesOrder);
-			
 		}
 		else
 		{
@@ -249,8 +209,6 @@ public class HomeRestController
 				suppliesOrders.add(suppliesOrder);
 				
 				cartRepo.save( cart );
-				
-				suppliesOrderRepo.save( suppliesOrder );
 			}
 			else
 			{
@@ -272,17 +230,13 @@ public class HomeRestController
 					suppliesOrders.add(suppliesOrder);
 					
 					cartRepo.save( cart );
-					
-					suppliesOrderRepo.save( suppliesOrder );
 				}
 				else
 				{
 					// do nothing
 				}
-				
 			}
 		}
-		
 		
 		return "1";
 	}
@@ -290,9 +244,12 @@ public class HomeRestController
 	
 	@GetMapping("/image")
 	@ResponseBody
-	public ResponseEntity<InputStreamResource> getImageDynamicType(@RequestParam("product") String product, @RequestParam("type") String type, @RequestParam("id") String id, @RequestParam("image_suffix") String image_suffix) {
+	public ResponseEntity<InputStreamResource> getImageDynamicType(	@RequestParam("product") String product,
+																	@RequestParam("type") String type,
+																	@RequestParam("id") String id, 
+																	@RequestParam("image_suffix") String image_suffix ) 
+	{
 	    MediaType contentType = (image_suffix=="png") ?  MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
-	    
 
 	    product = "/" + product;
 	    if (!type.equals( "null" ))
@@ -308,8 +265,8 @@ public class HomeRestController
 	    
 	    InputStream in = getClass().getResourceAsStream("/static/images"+product+type+id+"."+image_suffix);
 	    return ResponseEntity.ok()
-	      .contentType(contentType)
-	      .body(new InputStreamResource(in));
+	    		.contentType(contentType)
+	    		.body(new InputStreamResource(in));
 	}
 	
 	
@@ -317,9 +274,6 @@ public class HomeRestController
 	@PutMapping("/update/food/{id}")
 	public String foodUpdate(@PathVariable String id, @RequestBody String quantity, Principal principal)
 	{
-		
-		System.out.println("id="+id+",quantity="+quantity);
-		
 		Customer customer = customerRepo.findByUsername( principal.getName() );
 		
 		Cart cart = cartRepo.findByCustomerId( customer.getId() );
@@ -335,7 +289,6 @@ public class HomeRestController
 		}
 		
 		cartRepo.save(cart);
-		
 		return "1";
 	}
 
@@ -357,7 +310,6 @@ public class HomeRestController
 		}
 		
 		cartRepo.save(cart);
-		
 		return "1";
 	}
 	
@@ -382,7 +334,6 @@ public class HomeRestController
 		
 		cart.setPetOrders(petOrders);
 		cartRepo.save(cart);
-		
 		return "1";
 	}
 
@@ -407,7 +358,6 @@ public class HomeRestController
 		
 		cart.setFoodOrders(foodOrders);
 		cartRepo.save(cart);
-		
 		return "1";
 	}
 	
@@ -426,6 +376,7 @@ public class HomeRestController
 			if ( suppliesOrder.getSupply().getId() == Integer.parseInt(id) )
 			{
 				suppliesOrders.remove( suppliesOrder );
+				break;
 			}
 		}
 		
