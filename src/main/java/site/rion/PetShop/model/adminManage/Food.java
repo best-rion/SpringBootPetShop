@@ -31,7 +31,7 @@ public class Food
 		this.vendor = form.getVendor();
 		this.type = form.getType();
 		this.quantity = form.getQuantity();
-		this.price = form.getQuantity();
+		this.price = form.getPrice();
 	}
 	
 	

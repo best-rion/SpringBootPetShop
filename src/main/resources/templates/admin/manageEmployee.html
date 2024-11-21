@@ -59,7 +59,7 @@
 		{
 			padding: 10px 25px;
 	         margin: 10px auto;
-			background-color: rgb(26, 91, 165);
+			background-color: rgb(105, 164, 231);
 			color: white;
 		}
 		
@@ -172,6 +172,7 @@
 		   </tr>
 		   
 		   <tr th:each="employee: ${employees}"
+		     th:data-id	=  "${employee.id}"
 		     th:data-full_name	=  "${employee.full_name}"
 		     th:data-username	=  "${employee.username}"
 		   	 th:data-age		=  "${employee.age}"
@@ -181,6 +182,7 @@
 			 th:data-workhour	=  "${employee.workhour}"
 			 
 		     th:onclick="clickRow(
+			 			  this.getAttribute('data-id'),
 		   				  this.getAttribute('data-full_name'),
 		   				  this.getAttribute('data-username'),
 		   				  this.getAttribute('data-age'),
@@ -188,7 +190,8 @@
 		   				  this.getAttribute('data-phone'),
 		   				  this.getAttribute('data-salary'),
 		   				  this.getAttribute('data-workhour')
-		   				  )">
+		   				  )"
+			 th:id="'employee-'+${employee.id}">
 		     <td th:text="${employee.id}"></td>
 			 <td th:text="${employee.full_name}"></td>
 			 <td th:text="${employee.username}"></td>
@@ -208,6 +211,8 @@
 	<script>
 		
 		var updateMode = false;
+		
+		var clicked_id = null;
 		
 		function validateForm() {
 			var name = document.getElementById("full_name").value;
@@ -261,8 +266,13 @@
 		} 
 		
 		
-		function clickRow(full_name, username, age, gender, phone, salary, workhour)
+		function clickRow(id, full_name, username, age, gender, phone, salary, workhour)
 		{
+			if (clicked_id != null)
+			{
+				document.getElementById("employee-"+clicked_id).style.backgroundColor = "transparent"
+			}
+			
 			updateMode = true;
 			
 			document.getElementById("action").value 			= "update";
@@ -278,6 +288,9 @@
 			document.getElementById("phone").value 				= phone;
 			document.getElementById("salary").value 			= salary;
 			document.getElementById("workhour").value 			= workhour;
+			
+			clicked_id = id
+			document.getElementById("employee-"+clicked_id).style.backgroundColor = "rgb(105, 164, 231)"
 		}
 		
 		

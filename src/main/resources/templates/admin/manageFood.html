@@ -59,7 +59,7 @@
 		{
 			padding: 10px 25px;
 	         margin: 10px auto;
-			background-color: rgb(26, 91, 165);
+			background-color: rgb(105, 164, 231);
 			color: white;
 		}
 		
@@ -179,7 +179,9 @@
 		   				  this.getAttribute('data-price'),
 						  this.getAttribute('data-quantity'),
 						  this.getAttribute('data-image_suffix')
-		   				  )">
+		   				  )"
+						  
+			 th:id="'food-'+${food.id}">
 		     <td th:text="${food.id}"></td>
 			 <td th:text="${food.name}"></td>
 			 <td th:text="${food.vendor}"></td>
@@ -192,6 +194,9 @@
 	</div>
 	
 	<script>
+		
+		var clicked_id = null;
+		
 		function validateForm()
 		{
 			var name = document.getElementById("name").value;
@@ -235,6 +240,11 @@
 		
 		function clickRow(id, name, vendor, type, price, quantity, image_suffix)
 		{
+			if (clicked_id != null)
+			{
+				document.getElementById("food-"+clicked_id).style.backgroundColor = "transparent"
+			}
+			
 			updateMode = true
 			
 			document.getElementById("id").value 				= id;
@@ -248,8 +258,6 @@
 			document.getElementById(type).checked 				= true;
 			document.getElementById("price").value 				= price;
 			document.getElementById("quantity").value 			= quantity;
-			
-			
 			
 			///set image
 			
@@ -268,18 +276,18 @@
 			.then(body=>{
 
 					image.src = URL.createObjectURL( body )
+			})		
+			
 					
-			})
-
-
+			clicked_id = id
+			document.getElementById("food-"+clicked_id).style.backgroundColor = "rgb(105, 164, 231)"
 		}
 		
 		
 		function remove()
 		{
-			document.getElementById("action").value 			= "remove";
+			document.getElementById("action").value = "remove";
 		}
-		
 		
 	</script>
 

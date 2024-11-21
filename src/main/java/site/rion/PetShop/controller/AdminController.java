@@ -76,11 +76,7 @@ public class AdminController
 	@PostMapping("/admin/manageEmployee")
 	public String manageEmployeePost(@ModelAttribute EmployeeForm form, Principal principal, Model model)
 	{
-		
-		System.out.println(form.getAction());
-		
 		Admin admin = adminRepo.findByUsername( principal.getName() );
-		
 		
 		if (form.getAction().equals("add"))
 		{

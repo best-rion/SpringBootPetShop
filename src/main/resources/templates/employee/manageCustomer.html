@@ -59,7 +59,7 @@
 		{
 			padding: 10px 25px;
 	         margin: 10px auto;
-			background-color: rgb(26, 91, 165);
+			background-color: rgb(105, 164, 231);
 			color: white;
 		}
 		
@@ -161,6 +161,7 @@
 		   </tr>
 		   
 		   <tr th:each="customer: ${customers}"
+		     th:data-id	=  "${customer.id}"
 		     th:data-full_name	=  "${customer.full_name}"
 		     th:data-username	=  "${customer.username}"
 		   	 th:data-email		=  "${customer.email}"
@@ -168,12 +169,14 @@
 		     th:data-phone		=  "${customer.phone}"
 			 
 		     th:onclick="clickRow(
+			 			  this.getAttribute('data-id'),
 		   				  this.getAttribute('data-full_name'),
 		   				  this.getAttribute('data-username'),
 		   				  this.getAttribute('data-email'),
 						  this.getAttribute('data-gender'),
 		   				  this.getAttribute('data-phone')
-		   				  )">
+		   				  )"
+			 th:id="'customer-'+${customer.id}">
 		     <td th:text="${customer.id}"></td>
 			 <td th:text="${customer.full_name}"></td>
 			 <td th:text="${customer.username}"></td>
@@ -189,6 +192,8 @@
 
 	
 	<script>
+
+		var clicked_id = null;
 		
 		var updateMode = false;
 		
@@ -231,8 +236,13 @@
 			}
 		} 
 		
-		function clickRow(full_name, username, email, gender, phone)
+		function clickRow(id, full_name, username, email, gender, phone)
 		{
+			if (clicked_id != null)
+			{
+				document.getElementById("customer-"+clicked_id).style.backgroundColor = "transparent"
+			}
+
 			updateMode = true;
 			
 			document.getElementById("action").value 			= "update";
@@ -246,6 +256,9 @@
 			document.getElementById("email").value 				= email;
 			document.getElementById("gender"+gender).checked 			= true
 			document.getElementById("phone").value 				= phone;
+			
+			clicked_id = id
+			document.getElementById("customer-"+clicked_id).style.backgroundColor = "rgb(105, 164, 231)"
 		}
 		
 		function remove()

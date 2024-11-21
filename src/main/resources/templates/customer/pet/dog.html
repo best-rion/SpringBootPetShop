@@ -44,7 +44,7 @@
 		{
 			padding: 10px 25px;
             margin: 10px 20px;
-			background-color: rgb(26, 91, 165);
+			background-color: rgb(105, 164, 231);
 			color: white;
 		}
 
@@ -70,7 +70,7 @@
 	       <div th:each="pet2: ${pets2}" class="card">
 			
 				<div th:each="pet: ${pet2}" class="pet">
-					<img th:src="@{/images/pet/dog/}+${pet.id}+'.'+${pet.image_suffix}" alt="" height="100">
+					<img th:src="@{/upload/static/images/pet/dog/}+${pet.id}+'.'+${pet.image_suffix}" alt="" height="100">
 					<div class="details">
 						<p>Name		: <span th:text="${pet.name}"></span></p>
 						<p>Species	: <span th:text="${pet.species}"></span></p>

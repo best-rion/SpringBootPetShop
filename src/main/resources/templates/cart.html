@@ -29,9 +29,9 @@
 		}
 		
 		th, td {
-		  border: 1px solid black;
-		  border-collapse: collapse;
+		  border: 1px solid rgb(19, 153, 206);
 		  padding: 5px 20px;
+		  margin: 0px;
 		}
 		
 		.buttons
@@ -43,7 +43,7 @@
 		{
 			padding: 10px 25px;
 	         margin: 10px auto;
-			background-color: rgb(26, 91, 165);
+			background-color: rgb(105, 164, 231);
 			color: white;
 		}
 		
@@ -239,9 +239,17 @@
 			id : null
 		}
 		
+		var clicked_item = 
+		{
+			product: "pet",
+			id : null
+		}
+		
 		
 		function select()
 		{
+			
+			
 			var selected = document.getElementById("product")
 	
 			if (selected.value== "pet")
@@ -286,6 +294,11 @@
 		
 		async function clickRow(type, id, image_suffix, name, species , quantity, price)
 		{
+			if (clicked_item.id != null)
+			{
+				document.getElementById(clicked_item.product+"-"+clicked_item.id).style.backgroundColor = "transparent"
+			}
+			
 			current_item.id = id
 		
 			let image = document.getElementById("image")
@@ -323,6 +336,11 @@
 					document.getElementById("detail-name").innerHTML = name
 					document.getElementById("detail-price").innerHTML = price
 					console.log(species,quantity)
+
+
+					document.getElementById(current_item.product+"-"+current_item.id).style.backgroundColor = "rgb(105, 164, 231)"
+					clicked_item.product = current_item.product
+					clicked_item.id = current_item.id
 			})
 		}
 		

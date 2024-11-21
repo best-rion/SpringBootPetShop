@@ -1,10 +1,15 @@
 package site.rion.PetShop.controller;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +61,9 @@ public class HomeRestController
 	
 	@Autowired
 	FoodBuyService foodBuyService;
+	
+	@Value("${images.dir}")
+	private String imagesFolder;
 	
 	
 	@PutMapping("/pet/adopt")
@@ -247,7 +255,7 @@ public class HomeRestController
 	public ResponseEntity<InputStreamResource> getImageDynamicType(	@RequestParam("product") String product,
 																	@RequestParam("type") String type,
 																	@RequestParam("id") String id, 
-																	@RequestParam("image_suffix") String image_suffix ) 
+																	@RequestParam("image_suffix") String image_suffix ) throws IOException 
 	{
 	    MediaType contentType = (image_suffix=="png") ?  MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
 
@@ -263,7 +271,9 @@ public class HomeRestController
 	    id = "/" + id;
 	    
 	    
-	    InputStream in = getClass().getResourceAsStream("/static/images"+product+type+id+"."+image_suffix);
+	    Path path = Paths.get( imagesFolder + product+type+id+"."+image_suffix );
+	    
+	    InputStream in = Files.newInputStream(path);
 	    return ResponseEntity.ok()
 	    		.contentType(contentType)
 	    		.body(new InputStreamResource(in));

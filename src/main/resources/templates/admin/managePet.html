@@ -59,7 +59,7 @@
 		{
 			padding: 10px 25px;
 	         margin: 10px auto;
-			background-color: rgb(26, 91, 165);
+			background-color: rgb(105, 164, 231);
 			color: white;
 		}
 		
@@ -177,7 +177,9 @@
 		   				  this.getAttribute('data-price'),
 		   				  this.getAttribute('data-type'),
 						  this.getAttribute('data-image_suffix')
-		   				  )">
+		   				  )"
+						  
+			 th:id="'pet-'+${pet.id}">
 		     <td th:text="${pet.id}"></td>
 			 <td th:text="${pet.name}"></td>
 			 <td th:text="${pet.age}"></td>
@@ -193,6 +195,8 @@
 
 	
 	<script>
+
+		var clicked_id = null;
 		
 		var updateMode = false
 		
@@ -238,6 +242,11 @@
 		
 		function clickRow(id, name, age, species, price, type, image_suffix)
 		{
+			if (clicked_id != null)
+			{
+				document.getElementById("pet-"+clicked_id).style.backgroundColor = "transparent"
+			}
+			
 			updateMode = true
 			document.getElementById("id").value 				= id;
 			document.getElementById("action").value 			= "update";
@@ -272,7 +281,9 @@
 					
 			})
 
-
+					
+			clicked_id = id
+			document.getElementById("pet-"+clicked_id).style.backgroundColor = "rgb(105, 164, 231)"
 		}
 		
 		

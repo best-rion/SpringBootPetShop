@@ -44,7 +44,7 @@
 		{
 			padding: 10px 25px;
             margin: 10px 20px;
-			background-color: rgb(26, 91, 165);
+			background-color: rgb(105, 164, 231);
 			color: white;
 		}
 		
@@ -68,21 +68,20 @@
 
 		<h3> WET FOOD.</h3>
 		
-	       <div th:each="food2: ${foods2}" class="card">
-			
-				<div th:each="food: ${food2}" class="food">
-					<img th:src="@{/images/food/wet/}+${food.id}+'.'+${food.image_suffix}" alt="" height="100">
-					<div class="details">
-						<p>Name		: <span th:text="${food.name}"></span></p>
-						<p>Price	: <span th:text="${food.price}"></span></p>
-					</div>
-					<button class="button" th:id="'buy'+${food.id}" th:onclick="'buy('+${food.id}+')'">Buy</button>
+       	<div th:each="food2: ${foods2}" class="card">
+		
+			<div th:each="food: ${food2}" class="food">
+				<img th:src="@{/upload/static/images/food/wet/}+${food.id}+'.'+${food.image_suffix}" alt="" height="100">
+				<div class="details">
+					<p>Name		: <span th:text="${food.name}"></span></p>
+					<p>Price	: <span th:text="${food.price}"></span></p>
 				</div>
+				<button class="button" th:id="'buy'+${food.id}" th:onclick="'buy('+${food.id}+')'">Buy</button>
+			</div>
 
-	       </div>
+       	</div>
 		   
-	   </div>
-	   
+	</div>
 	   
 	<script>
 		
@@ -105,7 +104,6 @@
 				}
 			})
 		}
-		
 		
 	</script>
 
